@@ -59,3 +59,39 @@ podman ps
 curl localhost:8080/hello
 podman stop hello-app1
 ```
+
+### Build app in OCP from Dockerfile
+```
+oc new-app --context-dir=hello-app1 --strategy=docker https://github.com/thisisdavidbell/ocp-s2i
+oc status
+oc get pods
+```
+
+**Note**: If the Dockerfile has no port `EXPOSE`d, then no service is created.
+
+### Delete all deployed objects
+
+To delete all, including the image stream and build config:
+
+```
+oc get all
+oc delete all --selector app=ocp-s2i
+oc get all
+```
+
+**Note**: to rebuild and redeploy, you now run the full `oc new-app ...` again...
+
+### To rebuild and redeploy in place, without deletion
+
+```
+# make changes and push to github
+
+oc start-build ocp-s2i
+oc get pods -w
+```
+
+**Note**: you can see it run the build, and if successful start a new pod for the newly build hello-app1, and terminate the original hello-app1 pod.
+
+### Expose and call app
+```
+```

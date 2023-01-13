@@ -10,4 +10,6 @@ WORKDIR /usr/src/hello
 COPY . .
 RUN go build -v -o /usr/local/bin/hello ./...
 
+EXPOSE 8080
+
 CMD ["hello"]
