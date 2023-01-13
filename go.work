@@ -1,0 +1,6 @@
+go 1.19
+
+use (
+	./hello-app1
+	./hello-app2
+)
