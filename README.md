@@ -14,8 +14,10 @@ A simple go appliation to play with a number of concepts, including:
 - [x] Build and run image locally with podman
 - [x] Build and run from Dockerfile in OCP using docker context with s2i
 - [x] build and deploy second identical app to same OCP namespace
-- [ ] confirm service variables exist in each pod's container, and can be used to call other app, even after restarts...
+- [x] confirm service variables exist in each pod's container, and can be used to call other app, even after restarts...
 - [ ] [optional] update app2 to actually call app1 using the above env var techniques
+- [ ] Manually create build config
+  - [ ] Manually create required imagestream
 
 
 ## Commands
@@ -101,10 +103,23 @@ oc get route
 curl $(oc get route -o json hello-app1 | jq -r .spec.host)/hello
 ```
 
-### deploy a second identical app, with different name
+### Deploy a second identical app, with different name
 ```
 oc new-app --context-dir=hello-app1 --strategy=docker https://github.com/thisisdavidbell/ocp-s2i --name=hello-app2
 oc get service
 oc expose service hello-app2
 curl $(oc get route -o json hello-app2 | jq -r .spec.host)/hello
+```
+
+### Calling app1 from pod 2
+From within app2, it is possible to call the server running in app1 pod's container using:
+
+service name:
+```
+curl http://hello-app2:8080/hello
+```
+
+env vars:
+```
+curl http://${HELLO_APP2_SERVICE_HOST}:${HELLO_APP2_SERVICE_PORT}/hello
 ```
