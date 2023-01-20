@@ -14,6 +14,8 @@ A simple go appliation to play with a number of concepts, including:
 - [x] Build and run image locally with podman
 - [x] Build and run from Dockerfile in OCP using docker context with s2i
 - [x] build and deploy second identical app to same OCP namespace
+- [x] rebuild using `oc start-build ...`
+- [x] setup github webhook
 - [x] confirm service variables exist in each pod's container, and can be used to call other app, even after restarts...
 - [ ] [optional] update app2 to actually call app1 using the above env var techniques
 - [ ] Manually create build config
@@ -92,6 +94,39 @@ oc get pods -w
 ```
 
 **Note**: you can see it run the build, and if successful start a new pod for the newly build hello-app1, and terminate the original hello-app1 pod.
+
+### Github webhook
+
+To automatically run a new build when a change is pushed to github (if your OCP cluster is publicaly accessible):
+
+- link: https://docs.openshift.com/container-platform/4.10/cicd/builds/triggering-builds-build-hooks.html#builds-using-github-webhooks_triggering-builds-build-hooks
+
+#### 1. Retrieve the github url and secret from the buildconfig, through the OCP UI or cli:
+
+URL:
+```
+oc describe  bc/hello-app2 | grep -A 1 GitHub
+```
+
+Secret:
+```
+oc get bc/hello-app2 -o=jsonpath='{.spec.triggers..github.secret}' && echo
+```
+Note: `..` is used for 'recursive decent', following all paths to find all matching fields - a neat trick to find the only github entry in the array.
+
+#### 2. Add the webhook to the git repo
+
+- github repo ui
+  - Settings
+  - Webhooks
+  - Add webhook
+    - Payload URL - enter the above url with secret inserted
+    - Content-Type - change to `application/json`
+    - If required, disabled ssl verification
+    - you will need the secret as doc'ed in link above in recent versions of OCP/github.
+
+
+
 
 ### Expose and call app
 ```
