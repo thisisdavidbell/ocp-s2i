@@ -12,7 +12,7 @@ var PORT = "8080"
 var PATH = "/hello"
 
 func hello(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "Hello World, I'm app1.\n")
+	fmt.Fprint(w, "Hello World, I'm app1. Boo!.\n")
 }
 
 func main() {
